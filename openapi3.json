@@ -1,0 +1,839 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Deepdub API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/tts": {
+            "post": {
+                "description": "Generate and stream TTS audio based on the provided text",
+                "tags": [
+                    "TTS"
+                ],
+                "summary": "Generate and stream TTS audio",
+                "parameters": [
+                    {
+                        "description": "API Key",
+                        "name": "x-api-key",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/model.GenerationRequest"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Audio stream in MP3 format",
+                        "content": {
+                            "audio/mpeg": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "audio/mpeg": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "audio/mpeg": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "audio/mpeg": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tts/retroactive": {
+            "post": {
+                "description": "Generate TTS audio based on the provided text and return a URL for later retrieval. Supports voice prompt presets.",
+                "tags": [
+                    "TTS"
+                ],
+                "summary": "Generate TTS audio retroactively",
+                "parameters": [
+                    {
+                        "description": "API Key",
+                        "name": "x-api-key",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/model.GenerationRequest"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response with URL",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.URLResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tts/retroactive/{id}": {
+            "get": {
+                "description": "Stream the generated audio for a previously submitted retroactive TTS request",
+                "tags": [
+                    "TTS"
+                ],
+                "summary": "Get audio for a retroactive TTS request",
+                "parameters": [
+                    {
+                        "description": "API Key",
+                        "name": "x-api-key",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "audio/mpeg": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "audio/mpeg": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "audio/mpeg": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "ID not found",
+                        "content": {
+                            "audio/mpeg": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "audio/mpeg": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/voice": {
+            "get": {
+                "description": "Get all voice prompts for the authenticated customer",
+                "tags": [
+                    "Voice"
+                ],
+                "summary": "Get Voice Prompts",
+                "parameters": [
+                    {
+                        "description": "API Key",
+                        "name": "x-api-key",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "model.Response with array of voice prompts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/model.VoicePromptUpdateResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update metadata for an existing voice prompt",
+                "tags": [
+                    "Voice"
+                ],
+                "summary": "Update an existing voice prompt",
+                "parameters": [
+                    {
+                        "description": "API Key",
+                        "name": "x-api-key",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/model.VoiceBankAPIUpdateRequest"
+                            }
+                        }
+                    },
+                    "description": "Voice update request",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "model.Response with updated prompt details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.VoicePromptUpdateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Upload a voice sample to create a voice prompt in the voice bank",
+                "tags": [
+                    "Voice"
+                ],
+                "summary": "Upload a voice sample to the voice bank",
+                "parameters": [
+                    {
+                        "description": "API Key",
+                        "name": "x-api-key",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/model.VoiceBankAPIRequest"
+                            }
+                        }
+                    },
+                    "description": "Voice upload request",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "model.Response with updated prompt details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.VoiceBankAPIResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/voice/{prompt_id}": {
+            "get": {
+                "description": "Retrieve a specific voice prompt by its ID",
+                "tags": [
+                    "Voice"
+                ],
+                "summary": "Get a voice prompt by ID",
+                "parameters": [
+                    {
+                        "description": "API Key",
+                        "name": "x-api-key",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Voice Prompt ID",
+                        "name": "prompt_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "model.Response with voice prompt details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.VoicePromptUpdateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a specific voice prompt by its ID",
+                "tags": [
+                    "Voice"
+                ],
+                "summary": "Delete a voice prompt",
+                "parameters": [
+                    {
+                        "description": "API Key",
+                        "name": "x-api-key",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Voice Prompt ID",
+                        "name": "prompt_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Voice prompt successfully deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.VoiceBankAPIResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Response"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "externalDocs": {
+        "description": "OpenAPI",
+        "url": "https://restapi.deepdub.ai/api/v1/swagger/index.html"
+    },
+    "servers": [
+        {
+            "url": "https://restapi.deepdub.ai/api/v1"
+        }
+    ],
+    "components": {
+        "requestBodies": {
+            "model.GenerationRequest": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/model.GenerationRequest"
+                        }
+                    }
+                },
+                "description": "TTS generation request",
+                "required": true
+            }
+        },
+        "schemas": {
+            "model.AccentControl": {
+                "description": "Parameters for fine-tuning accent characteristics in generated speech",
+                "type": "object",
+                "properties": {
+                    "accentBaseLocale": {
+                        "description": "Base locale for the accent (e.g., en-US, fr-FR)",
+                        "type": "string",
+                        "example": "en-US"
+                    },
+                    "accentLocale": {
+                        "description": "Target accent locale to blend with (e.g., en-GB, es-ES)",
+                        "type": "string",
+                        "example": "en-GB"
+                    },
+                    "accentRatio": {
+                        "description": "Ratio of accent blending from 0.0 to 1.0 (0.0 = base locale only, 1.0 = target locale only)",
+                        "type": "number",
+                        "example": 0.5
+                    }
+                }
+            },
+            "model.GenerationRequest": {
+                "description": "Request structure for TTS and voice generation endpoints",
+                "type": "object",
+                "required": [
+                    "locale",
+                    "model",
+                    "targetText",
+                    "voicePromptId"
+                ],
+                "properties": {
+                    "accentControl": {
+                        "description": "Optional accent control parameters",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/model.AccentControl"
+                            }
+                        ]
+                    },
+                    "action": {
+                        "description": "Action to perform (optional)",
+                        "type": "string",
+                        "example": "generate"
+                    },
+                    "cleanAudio": {
+                        "description": "Whether to apply audio cleaning to the output (optional)",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "format": {
+                        "description": "Output audio format (optional)",
+                        "type": "string",
+                        "example": "wav"
+                    },
+                    "generationId": {
+                        "description": "Optional ID for the generation",
+                        "type": "string",
+                        "example": "gen_67890fghij"
+                    },
+                    "locale": {
+                        "description": "Language locale code (e.g., en-US, fr-FR)",
+                        "type": "string",
+                        "example": "en-US"
+                    },
+                    "model": {
+                        "description": "Model ID to use for generation\nModel ID to use for generation (required)",
+                        "type": "string",
+                        "example": "dd-etts-1.1"
+                    },
+                    "performanceReferencePromptId": {
+                        "description": "ID of performance reference prompt (optional)",
+                        "type": "string",
+                        "example": "perf_12345"
+                    },
+                    "promptBoost": {
+                        "description": "Enhance voice prompt characteristics (optional)",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "publish": {
+                        "description": "Whether to publish the generated audio (optional)",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "realtime": {
+                        "description": "Enable real-time processing mode (optional)",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "sampleRate": {
+                        "description": "Output audio sample rate in Hz (optional)",
+                        "type": "integer",
+                        "example": 44100
+                    },
+                    "seed": {
+                        "description": "Random seed for deterministic generation (optional)",
+                        "type": "integer",
+                        "example": 42
+                    },
+                    "superStretch": {
+                        "description": "Enable super stretch mode for longer audio (optional)",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "targetDuration": {
+                        "description": "Target duration for the generated audio in seconds (optional)",
+                        "type": "number",
+                        "example": 10.5
+                    },
+                    "targetText": {
+                        "description": "Text to be converted to speech",
+                        "type": "string",
+                        "example": "Hello world"
+                    },
+                    "temperature": {
+                        "description": "Generation temperature (0.0-1.0) (optional)",
+                        "type": "number",
+                        "example": 0.7
+                    },
+                    "tempo": {
+                        "description": "Playback speed multiplier (0.5-2.0) (optional)",
+                        "type": "number",
+                        "example": 1.2
+                    },
+                    "variance": {
+                        "description": "Voice variation level (0.0-1.0) (optional)",
+                        "type": "number",
+                        "example": 0.8
+                    },
+                    "voicePromptId": {
+                        "description": "ID of the voice prompt to use",
+                        "type": "string",
+                        "example": "vp_12345abcde"
+                    },
+                    "voiceReference": {
+                        "description": "Base64-encoded audio reference for voice cloning (optional)",
+                        "type": "string",
+                        "example": "base64_encoded_audio_data"
+                    }
+                }
+            },
+            "model.Response": {
+                "type": "object",
+                "required": [
+                    "success"
+                ],
+                "properties": {
+                    "data": {},
+                    "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                    },
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                }
+            },
+            "model.URLResponse": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string"
+                    }
+                }
+            },
+            "model.VoiceBankAPIRequest": {
+                "type": "object",
+                "properties": {
+                    "age": {
+                        "type": "integer"
+                    },
+                    "data": {
+                        "type": "string"
+                    },
+                    "filename": {
+                        "type": "string"
+                    },
+                    "gender": {
+                        "type": "string"
+                    },
+                    "locale": {
+                        "type": "string"
+                    },
+                    "publish": {
+                        "type": "boolean"
+                    },
+                    "speaker_id": {
+                        "type": "string"
+                    },
+                    "speaking_style": {
+                        "type": "string"
+                    },
+                    "text": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    }
+                }
+            },
+            "model.VoiceBankAPIResponse": {
+                "type": "object",
+                "properties": {
+                    "voice_prompt_id": {
+                        "type": "string"
+                    }
+                }
+            },
+            "model.VoiceBankAPIUpdateRequest": {
+                "type": "object",
+                "properties": {
+                    "age": {
+                        "description": "Age of the voice speaker",
+                        "type": "integer",
+                        "example": 35
+                    },
+                    "gender": {
+                        "description": "Gender of the voice speaker (male, female, non-binary)",
+                        "type": "string",
+                        "example": "MALE"
+                    },
+                    "id": {
+                        "description": "Unique identifier for the voice prompt",
+                        "type": "string",
+                        "example": "vp_12345abcde"
+                    },
+                    "locale": {
+                        "description": "Language locale code (e.g., en-US, fr-FR)",
+                        "type": "string",
+                        "example": "en-US"
+                    },
+                    "name": {
+                        "description": "Display name for the voice prompt",
+                        "type": "string",
+                        "example": "Professional Female Voice"
+                    }
+                }
+            },
+            "model.VoicePromptUpdateResponse": {
+                "description": "Response returned after successfully updating a voice prompt's metadata",
+                "type": "object",
+                "properties": {
+                    "createdAt": {
+                        "description": "Timestamp when the voice prompt was created",
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "Unique identifier for the voice prompt",
+                        "type": "string"
+                    },
+                    "locale": {
+                        "description": "Locale of the voice prompt (e.g., en-US, fr-FR)",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "Name of the voice prompt",
+                        "type": "string"
+                    },
+                    "speakerId": {
+                        "description": "Unique identifier for the speaker",
+                        "type": "string"
+                    },
+                    "text": {
+                        "description": "Text content associated with the voice prompt",
+                        "type": "string"
+                    },
+                    "title": {
+                        "description": "Title of the voice prompt",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
