@@ -600,21 +600,6 @@
                             }
                         ]
                     },
-                    "action": {
-                        "description": "Action to perform (optional)",
-                        "type": "string",
-                        "example": "generate"
-                    },
-                    "cleanAudio": {
-                        "description": "Whether to apply audio cleaning to the output (optional)",
-                        "type": "boolean",
-                        "example": true
-                    },
-                    "format": {
-                        "description": "Output audio format (optional)",
-                        "type": "string",
-                        "example": "wav"
-                    },
                     "generationId": {
                         "description": "Optional ID for the generation",
                         "type": "string",
