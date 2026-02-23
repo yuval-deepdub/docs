@@ -1,4 +1,5 @@
 {
+  "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "Deepdub Documentation",
   "colors": {
@@ -6,20 +7,53 @@
     "light": "#07C983",
     "dark": "#15803D"
   },
-  "navigation": {
-    "tabs": [
-      {
-        "tab": "API Reference",
-	      "openapi": "openapi3.json"
-      }
-    ],
-    "global": {
-
-    }
-  },
   "logo": {
     "light": "/logo/logo128.png",
     "dark": "/logo/logo128.png"
+  },
+  "favicon": "/favicon.svg",
+  "openapi": "openapi3.json",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": ["introduction", "quickstart", "authentication", "voice-presets"]
+          },
+          {
+            "group": "SDKs",
+            "pages": ["sdk", "sdk-javascript"]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "TTS",
+            "pages": [
+              "api-reference/tts/generate-and-stream-tts-audio"
+            ]
+          },
+          {
+            "group": "Voice",
+            "pages": [
+              "api-reference/voice/get-voice-prompts",
+              "api-reference/voice/upload-a-voice-sample",
+              "api-reference/voice/update-a-voice-prompt",
+              "api-reference/voice/get-a-voice-prompt-by-id",
+              "api-reference/voice/delete-a-voice-prompt"
+            ]
+          },
+          {
+            "group": "WebSocket",
+            "pages": ["api-reference/websocket/overview"]
+          }
+        ]
+      }
+    ]
   },
   "navbar": {
     "links": [
@@ -31,12 +65,21 @@
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "href": "https://app.deepdub.com"
     }
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/deepdub-ai" 
+      "github": "https://github.com/deepdub-ai",
+      "website": "https://deepdub.com",
+      "linkedin": "https://www.linkedin.com/company/deepdub"
     }
+  },
+  "api": {
+    "auth": {
+      "method": "key",
+      "name": "x-api-key"
+    },
+    "baseUrl": "https://restapi.deepdub.ai/api/v1"
   }
 }

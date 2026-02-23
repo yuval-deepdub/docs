@@ -1,0 +1,332 @@
+---
+title: WebSocket Streaming API
+description: "Stream TTS audio in real-time over WebSocket connections"
+---
+
+## Overview
+
+The WebSocket API enables real-time, chunked audio streaming for low-latency TTS generation. Audio data is delivered incrementally as base64-encoded chunks, allowing playback to begin before the full generation is complete.
+
+<Info>
+  The WebSocket API uses the same generation parameters as the [REST TTS endpoint](/api-reference/tts/generate-and-stream-tts-audio), but delivers audio as a stream of chunks rather than a single response.
+</Info>
+
+## Connection
+
+Connect to the WebSocket endpoint with your API key:
+
+```
+wss://wsapi.deepdub.ai/open
+```
+
+Authentication is handled during the WebSocket handshake via the `x-api-key` header or query parameter.
+
+## Request format
+
+Send a JSON message on the WebSocket connection:
+
+<ParamField body="action" type="string" default="text-to-speech">
+  The type of generation request.
+</ParamField>
+
+<ParamField body="model" type="string" required>
+  Model ID to use for generation (e.g., `dd-etts-1.1`).
+</ParamField>
+
+<ParamField body="targetText" type="string" required>
+  Text to convert to speech.
+</ParamField>
+
+<ParamField body="locale" type="string" required>
+  Language locale code (e.g., `en-US`, `fr-FR`).
+</ParamField>
+
+<ParamField body="voicePromptId" type="string" required>
+  ID of the voice prompt to use. Supports `asset:` prefix for built-in voices.
+</ParamField>
+
+<ParamField body="generationId" type="string">
+  Optional client-provided ID. Auto-generated if not provided.
+</ParamField>
+
+<ParamField body="targetDuration" type="number">
+  Target audio duration in seconds.
+</ParamField>
+
+<ParamField body="tempo" type="number">
+  Playback speed multiplier (0.5-2.0).
+</ParamField>
+
+<ParamField body="variance" type="number">
+  Voice variation level (0.0-1.0).
+</ParamField>
+
+<ParamField body="seed" type="integer">
+  Random seed for deterministic generation.
+</ParamField>
+
+<ParamField body="temperature" type="number">
+  Generation temperature (0.0-1.0).
+</ParamField>
+
+<ParamField body="sampleRate" type="integer">
+  Output sample rate in Hz. Supported: `8000`, `16000`, `22050`, `24000`, `32000`, `36000`, `44100`, `48000`.
+</ParamField>
+
+<ParamField body="format" type="string" default="mp3">
+  Output audio format: `mp3`, `wav`, `opus`, or `mulaw`.
+</ParamField>
+
+<ParamField body="promptBoost" type="boolean">
+  Enhance voice prompt characteristics.
+</ParamField>
+
+<ParamField body="superStretch" type="boolean">
+  Enable super stretch mode for longer audio.
+</ParamField>
+
+<ParamField body="realtime" type="boolean">
+  Enable real-time priority processing.
+</ParamField>
+
+<ParamField body="cleanAudio" type="boolean" default="true">
+  Apply audio cleanup processing.
+</ParamField>
+
+<ParamField body="autoGain" type="boolean">
+  Automatically adjust audio gain levels.
+</ParamField>
+
+<ParamField body="accentControl" type="object">
+  Accent blending parameters. See [AccentControl](#accent-control) below.
+</ParamField>
+
+<ParamField body="performanceReferencePromptId" type="string">
+  ID of a performance reference prompt to guide delivery style.
+</ParamField>
+
+### Example request
+
+```json
+{
+  "action": "text-to-speech",
+  "model": "dd-etts-1.1",
+  "targetText": "Welcome to Deepdub's real-time text to speech API.",
+  "locale": "en-US",
+  "voicePromptId": "vp_12345abcde",
+  "format": "mp3",
+  "sampleRate": 44100,
+  "temperature": 0.7
+}
+```
+
+## Response format
+
+### Audio chunks
+
+Audio is delivered as a series of JSON messages. Each chunk contains a portion of the audio data:
+
+<ResponseField name="index" type="integer">
+  Sequential chunk index starting from 0.
+</ResponseField>
+
+<ResponseField name="generationId" type="string">
+  The generation ID for this request. Use this to correlate chunks with requests when running multiple generations on the same connection.
+</ResponseField>
+
+<ResponseField name="data" type="string">
+  Base64-encoded audio data for this chunk.
+</ResponseField>
+
+<ResponseField name="isFinished" type="boolean">
+  `true` when this is the final chunk of the generation.
+</ResponseField>
+
+### Example response stream
+
+**Initial acknowledgement:**
+
+```json
+{
+  "data": "",
+  "generationId": "4da9902b-9141-4fb7-9efb-d616ce266ed9",
+  "isFinished": false
+}
+```
+
+**Audio chunks:**
+
+```json
+{
+  "index": 0,
+  "generationId": "4da9902b-9141-4fb7-9efb-d616ce266ed9",
+  "data": "//uQxAAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVV...",
+  "isFinished": false
+}
+```
+
+```json
+{
+  "index": 1,
+  "generationId": "4da9902b-9141-4fb7-9efb-d616ce266ed9",
+  "data": "HAAYABgAGAAgACAA...",
+  "isFinished": false
+}
+```
+
+**Final chunk:**
+
+```json
+{
+  "index": 2,
+  "generationId": "4da9902b-9141-4fb7-9efb-d616ce266ed9",
+  "data": "AAAAAAAAAA==",
+  "isFinished": true
+}
+```
+
+## Error responses
+
+When an error occurs, the WebSocket sends a JSON error message:
+
+<ResponseField name="error" type="string">
+  Human-readable error description.
+</ResponseField>
+
+<ResponseField name="errorType" type="string">
+  Error category. One of: `RateLimit`, `MaxExceeded`, `InsufficientCredits`, `InvalidInput`.
+</ResponseField>
+
+<ResponseField name="generationId" type="string">
+  The generation ID, if available.
+</ResponseField>
+
+```json
+{
+  "error": "Rate limit exceeded",
+  "errorType": "RateLimit",
+  "generationId": "4da9902b-9141-4fb7-9efb-d616ce266ed9"
+}
+```
+
+| Error type | Description |
+|------------|-------------|
+| `RateLimit` | Too many concurrent requests. Reduce request frequency. |
+| `MaxExceeded` | Maximum generation minutes reached for your plan. |
+| `InsufficientCredits` | Account has insufficient credits. Top up your balance. |
+| `InvalidInput` | Invalid request parameters. Check your request body. |
+
+## Accent control
+
+Blend accents between two locales using the `accentControl` object:
+
+```json
+{
+  "accentControl": {
+    "accentBaseLocale": "en-US",
+    "accentLocale": "fr-FR",
+    "accentRatio": 0.75
+  }
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `accentBaseLocale` | string | Base accent locale (e.g., `en-US`) |
+| `accentLocale` | string | Target accent to blend (e.g., `fr-FR`) |
+| `accentRatio` | number | Blend ratio from 0.0 (base only) to 1.0 (target only) |
+
+## Code examples
+
+### Python
+
+```python
+import asyncio
+import websockets
+import json
+import base64
+
+async def stream_tts():
+    uri = "wss://wsapi.deepdub.ai/open"
+    headers = {"x-api-key": "YOUR_API_KEY"}
+
+    async with websockets.connect(uri, extra_headers=headers) as ws:
+        request = {
+            "action": "text-to-speech",
+            "model": "dd-etts-1.1",
+            "targetText": "Hello from Deepdub!",
+            "locale": "en-US",
+            "voicePromptId": "vp_12345abcde",
+            "format": "mp3"
+        }
+
+        await ws.send(json.dumps(request))
+
+        audio_chunks = []
+        async for message in ws:
+            response = json.loads(message)
+
+            if "error" in response:
+                print(f"Error: {response['error']}")
+                break
+
+            if response.get("data"):
+                audio_chunks.append(base64.b64decode(response["data"]))
+
+            if response.get("isFinished"):
+                break
+
+        with open("output.mp3", "wb") as f:
+            for chunk in audio_chunks:
+                f.write(chunk)
+
+        print("Audio saved to output.mp3")
+
+asyncio.run(stream_tts())
+```
+
+### JavaScript
+
+```javascript
+const WebSocket = require("ws");
+const fs = require("fs");
+
+const ws = new WebSocket("wss://wsapi.deepdub.ai/open", {
+  headers: { "x-api-key": "YOUR_API_KEY" },
+});
+
+ws.on("open", () => {
+  ws.send(
+    JSON.stringify({
+      action: "text-to-speech",
+      model: "dd-etts-1.1",
+      targetText: "Hello from Deepdub!",
+      locale: "en-US",
+      voicePromptId: "vp_12345abcde",
+      format: "mp3",
+    })
+  );
+});
+
+const chunks = [];
+
+ws.on("message", (data) => {
+  const response = JSON.parse(data);
+
+  if (response.error) {
+    console.error("Error:", response.error);
+    ws.close();
+    return;
+  }
+
+  if (response.data) {
+    chunks.push(Buffer.from(response.data, "base64"));
+  }
+
+  if (response.isFinished) {
+    fs.writeFileSync("output.mp3", Buffer.concat(chunks));
+    console.log("Audio saved to output.mp3");
+    ws.close();
+  }
+});
+```
