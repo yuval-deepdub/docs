@@ -25,6 +25,10 @@
           {
             "group": "SDKs",
             "pages": ["sdk", "sdk-javascript"]
+          },
+          {
+            "group": "AI Agent Integration",
+            "pages": ["cursor-skill", "claude-code"]
           }
         ]
       },
