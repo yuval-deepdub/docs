@@ -31,7 +31,7 @@ Contact [support@deepdub.ai](mailto:support@deepdub.ai) or visit your Deepdub da
   Never expose your API key in client-side code or public repositories. Always store keys in environment variables or a secrets manager.
 </Warning>
 
-- Store API keys in environment variables (e.g., `DEEPDUB_API_KEY`)
+- Store API keys in a secrets manager (e.g., AWS Secrets Manager, HashiCorp Vault, GCP Secret Manager)
 - Rotate keys periodically
 - Use different keys for development and production environments
 
@@ -51,3 +51,16 @@ Rate limit errors return a `429` status code or a WebSocket error with `errorTyp
 TTS generation consumes credits based on the duration of generated audio. If your account runs out of credits, requests will return an `InsufficientCredits` error.
 
 Check your credit balance in the Deepdub dashboard, or contact support to upgrade your plan.
+
+## Regions
+
+Deepdub operates in two regions:
+
+| Region | Base URL |
+|--------|----------|
+| US (default) | `https://restapi.deepdub.ai/api/v1` |
+| EU | `https://eu-restapi.deepdub.ai/api/v1` |
+
+<Warning>
+  The EU region is **not available** with the free trial API key. To access the EU region, [contact us](mailto:support@deepdub.ai) for a production API key.
+</Warning>

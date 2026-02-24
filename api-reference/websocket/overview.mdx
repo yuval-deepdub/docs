@@ -30,7 +30,7 @@ Send a JSON message on the WebSocket connection:
 </ParamField>
 
 <ParamField body="model" type="string" required>
-  Model ID to use for generation (e.g., `dd-etts-1.1`).
+  Model ID to use for generation (e.g., `dd-etts-3.0`).
 </ParamField>
 
 <ParamField body="targetText" type="string" required>
@@ -110,7 +110,7 @@ Send a JSON message on the WebSocket connection:
 ```json
 {
   "action": "text-to-speech",
-  "model": "dd-etts-1.1",
+  "model": "dd-etts-3.0",
   "targetText": "Welcome to Deepdub's real-time text to speech API.",
   "locale": "en-US",
   "voicePromptId": "vp_12345abcde",
@@ -253,7 +253,7 @@ async def stream_tts():
     async with websockets.connect(uri, extra_headers=headers) as ws:
         request = {
             "action": "text-to-speech",
-            "model": "dd-etts-1.1",
+            "model": "dd-etts-3.0",
             "targetText": "Hello from Deepdub!",
             "locale": "en-US",
             "voicePromptId": "vp_12345abcde",
@@ -299,7 +299,7 @@ ws.on("open", () => {
   ws.send(
     JSON.stringify({
       action: "text-to-speech",
-      model: "dd-etts-1.1",
+      model: "dd-etts-3.0",
       targetText: "Hello from Deepdub!",
       locale: "en-US",
       voicePromptId: "vp_12345abcde",

@@ -38,6 +38,13 @@
             ]
           },
           {
+            "group": "Gender Detection",
+            "pages": [
+              "api-reference/gender-detection/classify-speaker-gender",
+              "api-reference/gender-detection/classify-speaker-gender-file-upload"
+            ]
+          },
+          {
             "group": "Voice",
             "pages": [
               "api-reference/voice/get-voice-prompts",

@@ -101,78 +101,6 @@ curl -X POST https://restapi.deepdub.ai/api/v1/tts \
   --output output.mp3
 ```
 
-## List available voices
-
-<Tabs>
-<Tab title="Python SDK">
-```python
-voices = client.list_voices()
-for v in voices.get("voicePrompts", []):
-    print(f"{v['id']}: {v.get('name', v.get('title', 'Untitled'))}")
-```
-</Tab>
-<Tab title="JavaScript SDK">
-```javascript
-// Using HTTP protocol for REST calls
-const deepdub = new DeepdubClient("dd-00000000000000000000000065c9cbfe", {
-  protocol: "http",
-});
-
-const voices = await deepdub.get("/voice");
-console.log(voices);
-```
-</Tab>
-<Tab title="cURL">
-```bash
-curl https://restapi.deepdub.ai/api/v1/voice \
-  -H "x-api-key: dd-00000000000000000000000065c9cbfe"
-```
-</Tab>
-</Tabs>
-
-## Upload a custom voice
-
-<Tabs>
-<Tab title="Python SDK">
-```python
-from pathlib import Path
-
-response = client.add_voice(
-    data=Path("voice_sample.wav"),
-    name="My Custom Voice",
-    gender="female",
-    locale="en-US",
-    speaking_style="Neutral",
-)
-print(f"Created voice: {response}")
-```
-</Tab>
-<Tab title="JavaScript SDK (HTTP)">
-```javascript
-const fs = require("fs");
-const deepdub = new DeepdubClient("dd-00000000000000000000000065c9cbfe", {
-  protocol: "http",
-});
-
-const audioData = fs.readFileSync("voice_sample.wav").toString("base64");
-
-const response = await deepdub.post("/voice", {
-  json: {
-    filename: "voice_sample.wav",
-    data: audioData,
-    title: "My Custom Voice",
-    locale: "en-US",
-    gender: "FEMALE",
-  },
-});
-```
-</Tab>
-</Tabs>
-
-<Note>
-Audio files must be under 20 MB. The audio data must be base64-encoded in the request body.
-</Note>
-
 ## Advanced generation options
 
 Fine-tune your audio with accent blending and tuned parameters:
@@ -257,7 +185,7 @@ main();
 <CardGroup cols={2}>
 
 <Card title="Voice Presets" icon="headphones" href="/voice-presets">
-  Browse 35+ voice presets across 6 languages.
+  Browse curated voice presets from our library of thousands of voices.
 </Card>
 
 <Card title="Python SDK Reference" icon="python" href="/sdk">

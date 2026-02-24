@@ -61,7 +61,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Invalid request: missing required field 'targetText'"
                 }
               }
             }
@@ -71,7 +75,39 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Unauthorized: invalid or missing API key"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits — your account has run out of TTS credits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "InsufficientCredits: your account has no remaining credits"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded — too many concurrent requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "RateLimit: concurrent request limit exceeded"
                 }
               }
             }
@@ -81,7 +117,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Internal server error"
                 }
               }
             }
@@ -89,12 +129,12 @@
         }
       }
     },
-    "/tts/retroactive": {
+    "/gender-detection/classify": {
       "post": {
-        "operationId": "generateTTSRetroactive",
-        "description": "Submit a TTS generation request and receive a URL for later audio retrieval. The audio is generated asynchronously and can be downloaded once ready using the returned URL.",
-        "tags": ["TTS"],
-        "summary": "Generate TTS audio retroactively",
+        "operationId": "classifyGender",
+        "description": "Classify the gender of the speaker in an audio file. Accepts either an audio URL (S3 or HTTP) or base64-encoded audio data. Supports WAV, MP3, FLAC, OGG, and other common audio formats.",
+        "tags": ["Gender Detection"],
+        "summary": "Classify speaker gender",
         "parameters": [
           {
             "description": "API Key",
@@ -107,25 +147,36 @@
           }
         ],
         "requestBody": {
-          "$ref": "#/components/requestBodies/model.GenerationRequest"
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/model.GenderClassificationRequest"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
-            "description": "Successful response with retrieval URL",
+            "description": "Successful classification",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.URLResponse"
+                  "$ref": "#/components/schemas/model.GenderClassificationResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Bad request — invalid or missing parameters",
+            "description": "Bad request — must provide either audio_url or audio_base64",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.ErrorResponse"
+                },
+                "example": {
+                  "error": "Bad request",
+                  "detail": "Either audio_url or audio_base64 must be provided"
                 }
               }
             }
@@ -135,7 +186,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.ErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized",
+                  "detail": "Invalid or missing API key"
                 }
               }
             }
@@ -145,7 +200,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.ErrorResponse"
+                },
+                "example": {
+                  "error": "Classification failed",
+                  "detail": "Internal server error"
                 }
               }
             }
@@ -153,12 +212,12 @@
         }
       }
     },
-    "/tts/retroactive/{id}": {
-      "get": {
-        "operationId": "getTTSRetroactive",
-        "description": "Stream the generated audio for a previously submitted retroactive TTS request. The audio is returned as a binary stream in the originally requested format.",
-        "tags": ["TTS"],
-        "summary": "Get audio for a retroactive TTS request",
+    "/gender-detection/classify/upload": {
+      "post": {
+        "operationId": "classifyGenderUpload",
+        "description": "Classify the gender of the speaker from an uploaded audio file. Accepts audio files in WAV, MP3, FLAC, OGG, and other common formats.",
+        "tags": ["Gender Detection"],
+        "summary": "Classify speaker gender (file upload)",
         "parameters": [
           {
             "description": "API Key",
@@ -168,25 +227,33 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "description": "The generation ID returned from the retroactive TTS request",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Audio file to classify (WAV, MP3, FLAC, OGG)"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "Audio stream",
+            "description": "Successful classification",
             "content": {
-              "audio/mpeg": {
+              "application/json": {
                 "schema": {
-                  "type": "string",
-                  "format": "binary"
+                  "$ref": "#/components/schemas/model.GenderClassificationResponse"
                 }
               }
             }
@@ -196,7 +263,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.ErrorResponse"
+                },
+                "example": {
+                  "error": "Bad request",
+                  "detail": "No file uploaded"
                 }
               }
             }
@@ -206,17 +277,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Generation ID not found or audio not yet ready",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.ErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized",
+                  "detail": "Invalid or missing API key"
                 }
               }
             }
@@ -226,7 +291,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.ErrorResponse"
+                },
+                "example": {
+                  "error": "Classification failed",
+                  "detail": "Internal server error"
                 }
               }
             }
@@ -286,7 +355,25 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Invalid request parameters"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Unauthorized: invalid or missing API key"
                 }
               }
             }
@@ -296,7 +383,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Internal server error"
                 }
               }
             }
@@ -351,7 +442,25 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Audio data exceeds 20 MB limit"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Unauthorized: invalid or missing API key"
                 }
               }
             }
@@ -361,7 +470,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Voice prompt limit reached for your account"
                 }
               }
             }
@@ -371,7 +484,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Internal server error"
                 }
               }
             }
@@ -426,7 +543,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Invalid request: voice prompt ID is required"
                 }
               }
             }
@@ -436,7 +557,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Unauthorized: invalid or missing API key"
                 }
               }
             }
@@ -446,7 +571,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Internal server error"
                 }
               }
             }
@@ -501,7 +630,25 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Invalid voice prompt ID format"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Unauthorized: invalid or missing API key"
                 }
               }
             }
@@ -511,7 +658,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Voice prompt not found"
                 }
               }
             }
@@ -521,7 +672,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Internal server error"
                 }
               }
             }
@@ -569,7 +724,39 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Invalid voice prompt ID"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Unauthorized: invalid or missing API key"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Voice prompt not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Voice prompt not found"
                 }
               }
             }
@@ -579,7 +766,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Internal server error"
                 }
               }
             }
@@ -611,7 +802,7 @@
             "schema": {
               "type": "string"
             },
-            "example": "dd-etts-1.1,dd-etts-2.0"
+            "example": "dd-etts-3.0,dd-etts-2.5"
           }
         ],
         "responses": {
@@ -630,17 +821,25 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Invalid model IDs"
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Unauthorized: invalid or missing API key"
                 }
               }
             }
@@ -650,7 +849,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Internal server error"
                 }
               }
             }
@@ -682,7 +885,7 @@
             "schema": {
               "type": "string"
             },
-            "example": "dd-etts-1.1"
+            "example": "dd-etts-3.0"
           }
         ],
         "responses": {
@@ -697,11 +900,15 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Unauthorized: invalid or missing API key"
                 }
               }
             }
@@ -711,7 +918,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Model not found"
                 }
               }
             }
@@ -721,7 +932,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Internal server error"
                 }
               }
             }
@@ -751,7 +966,7 @@
             "schema": {
               "type": "string"
             },
-            "example": "dd-etts-1.1"
+            "example": "dd-etts-3.0"
           }
         ],
         "requestBody": {
@@ -781,17 +996,25 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Invalid size parameter"
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Unauthorized: invalid or missing API key"
                 }
               }
             }
@@ -801,7 +1024,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/model.Response"
+                  "$ref": "#/components/schemas/model.APIError"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Internal server error"
                 }
               }
             }
@@ -864,7 +1091,8 @@
           "model": {
             "description": "Model ID to use for generation",
             "type": "string",
-            "example": "dd-etts-1.1"
+            "default": "dd-etts-3.0",
+            "example": "dd-etts-3.0"
           },
           "targetText": {
             "description": "Text to be converted to speech",
@@ -980,8 +1208,102 @@
           }
         }
       },
+      "model.GenderClassificationRequest": {
+        "description": "Request for gender classification from audio",
+        "type": "object",
+        "properties": {
+          "audio_url": {
+            "description": "URL to an audio file (S3 or HTTP). Provide either audio_url or audio_base64.",
+            "type": "string",
+            "example": "https://example.com/audio/sample.wav"
+          },
+          "audio_base64": {
+            "description": "Base64-encoded audio data. Provide either audio_url or audio_base64.",
+            "type": "string",
+            "example": "UklGRi..."
+          }
+        }
+      },
+      "model.GenderClassificationResponse": {
+        "description": "Gender classification result",
+        "type": "object",
+        "required": ["predicted_gender", "confidence"],
+        "properties": {
+          "predicted_gender": {
+            "description": "Predicted gender of the speaker",
+            "type": "string",
+            "enum": ["female", "male"],
+            "example": "female"
+          },
+          "confidence": {
+            "description": "Confidence score (0.0 to 1.0)",
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "example": 0.95
+          },
+          "prediction": {
+            "description": "Full prediction scores for both genders",
+            "type": "object",
+            "properties": {
+              "female": {
+                "type": "number",
+                "description": "Probability of female speaker",
+                "example": 0.95
+              },
+              "male": {
+                "type": "number",
+                "description": "Probability of male speaker",
+                "example": 0.05
+              }
+            }
+          },
+          "duration_seconds": {
+            "description": "Duration of the audio in seconds",
+            "type": "number",
+            "example": 3.5
+          },
+          "processing_time_ms": {
+            "description": "Processing time in milliseconds",
+            "type": "number",
+            "example": 120.5
+          }
+        }
+      },
+      "model.ErrorResponse": {
+        "description": "Error response",
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Classification failed"
+          },
+          "detail": {
+            "type": "string",
+            "example": "Either audio_url or audio_base64 must be provided"
+          }
+        }
+      },
+      "model.APIError": {
+        "description": "Error response returned for all non-2xx status codes",
+        "type": "object",
+        "required": ["success", "message"],
+        "properties": {
+          "success": {
+            "description": "Always false for error responses",
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "description": "Human-readable error message",
+            "type": "string",
+            "example": "Invalid request parameters"
+          }
+        }
+      },
       "model.Response": {
-        "description": "Standard API response wrapper",
+        "description": "Standard API success response wrapper",
         "type": "object",
         "required": ["success"],
         "properties": {
@@ -997,17 +1319,6 @@
           },
           "data": {
             "description": "Response payload (varies by endpoint)"
-          }
-        }
-      },
-      "model.URLResponse": {
-        "description": "Response containing a URL for retrieving retroactive TTS audio",
-        "type": "object",
-        "properties": {
-          "url": {
-            "description": "URL to retrieve the generated audio",
-            "type": "string",
-            "example": "https://restapi.deepdub.ai/api/v1/tts/retroactive/gen_67890fghij.mp3"
           }
         }
       },
