@@ -38,7 +38,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
           }
         ],
         "requestBody": {
@@ -143,7 +144,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
           }
         ],
         "requestBody": {
@@ -226,7 +228,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
           }
         ],
         "requestBody": {
@@ -317,7 +320,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
           },
           {
             "description": "Maximum number of voice prompts to return",
@@ -407,7 +411,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
           }
         ],
         "requestBody": {
@@ -508,7 +513,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
           }
         ],
         "requestBody": {
@@ -597,7 +603,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
           },
           {
             "description": "Voice Prompt ID",
@@ -696,7 +703,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
           },
           {
             "description": "Voice Prompt ID",
@@ -792,7 +800,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
           },
           {
             "description": "Comma-separated list of model IDs",
@@ -875,7 +884,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
           },
           {
             "description": "Model ID",
@@ -956,7 +966,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
           },
           {
             "description": "Model ID",
@@ -1116,34 +1127,29 @@
           },
           "targetDuration": {
             "description": "Target duration for the generated audio in seconds",
-            "type": "number",
-            "example": 10.5
+            "type": "number"
           },
           "tempo": {
             "description": "Playback speed multiplier (0.5-2.0)",
             "type": "number",
             "minimum": 0.5,
-            "maximum": 2.0,
-            "example": 1.0
+            "maximum": 2.0
           },
           "variance": {
             "description": "Voice variation level (0.0-1.0)",
             "type": "number",
             "minimum": 0.0,
-            "maximum": 1.0,
-            "example": 0.8
+            "maximum": 1.0
           },
           "seed": {
             "description": "Random seed for deterministic generation",
-            "type": "integer",
-            "example": 42
+            "type": "integer"
           },
           "temperature": {
             "description": "Generation temperature (0.0-1.0). Higher values produce more varied output.",
             "type": "number",
             "minimum": 0.0,
-            "maximum": 1.0,
-            "example": 0.7
+            "maximum": 1.0
           },
           "sampleRate": {
             "description": "Output audio sample rate in Hz. Supported values: 8000, 16000, 22050, 24000, 32000, 36000, 44100, 48000.",
