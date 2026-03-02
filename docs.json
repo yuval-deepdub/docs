@@ -93,6 +93,9 @@
       "defaultValue": "dd-00000000000000000000000065c9cbfe"
     },
     "baseUrl": "https://restapi.deepdub.ai/api/v1",
+    "playground": {
+      "proxy": false
+    },
     "examples": {
       "prefill": false,
       "defaults": "required"
