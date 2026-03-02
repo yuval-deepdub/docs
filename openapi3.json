@@ -37,7 +37,8 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
             },
             "example": "dd-00000000000000000000000065c9cbfe"
           }
@@ -143,7 +144,8 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
             },
             "example": "dd-00000000000000000000000065c9cbfe"
           }
@@ -227,7 +229,8 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
             },
             "example": "dd-00000000000000000000000065c9cbfe"
           }
@@ -319,7 +322,8 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
             },
             "example": "dd-00000000000000000000000065c9cbfe"
           },
@@ -410,7 +414,8 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
             },
             "example": "dd-00000000000000000000000065c9cbfe"
           }
@@ -512,7 +517,8 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
             },
             "example": "dd-00000000000000000000000065c9cbfe"
           }
@@ -602,7 +608,8 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
             },
             "example": "dd-00000000000000000000000065c9cbfe"
           },
@@ -702,7 +709,8 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
             },
             "example": "dd-00000000000000000000000065c9cbfe"
           },
@@ -799,7 +807,8 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
             },
             "example": "dd-00000000000000000000000065c9cbfe"
           },
@@ -883,7 +892,8 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
             },
             "example": "dd-00000000000000000000000065c9cbfe"
           },
@@ -965,7 +975,8 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
             },
             "example": "dd-00000000000000000000000065c9cbfe"
           },
