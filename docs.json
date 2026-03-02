@@ -94,7 +94,8 @@
     },
     "baseUrl": "https://restapi.deepdub.ai/api/v1",
     "examples": {
-      "prefill": true
+      "prefill": true,
+      "defaults": "required"
     }
   }
 }
