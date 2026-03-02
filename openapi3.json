@@ -1129,12 +1129,11 @@
           "voicePromptId": {
             "description": "ID of the voice prompt to use for generation",
             "type": "string",
-            "example": "vp_12345abcde"
+            "example": "bd1b00bb-be1c-4679-8eaa-0fcbfd4ff773"
           },
           "generationId": {
             "description": "Optional client-provided ID for the generation. If not provided, one will be generated automatically.",
-            "type": "string",
-            "example": "gen_67890fghij"
+            "type": "string"
           },
           "targetDuration": {
             "description": "Target duration for the generated audio in seconds",
@@ -1215,13 +1214,11 @@
           },
           "performanceReferencePromptId": {
             "description": "ID of a performance reference prompt to guide speech style and delivery",
-            "type": "string",
-            "example": "perf_12345"
+            "type": "string"
           },
           "voiceReference": {
             "description": "Base64-encoded audio reference for voice cloning. Use this instead of voicePromptId for instant voice cloning.",
-            "type": "string",
-            "example": "base64_encoded_audio_data"
+            "type": "string"
           }
         }
       },
@@ -1236,8 +1233,7 @@
           },
           "audio_base64": {
             "description": "Base64-encoded audio data. Provide either audio_url or audio_base64.",
-            "type": "string",
-            "example": "UklGRi..."
+            "type": "string"
           }
         }
       },
@@ -1401,8 +1397,7 @@
           },
           "data": {
             "description": "Base64-encoded audio data",
-            "type": "string",
-            "example": "UklGRiQA..."
+            "type": "string"
           },
           "title": {
             "description": "Title for the voice prompt",
