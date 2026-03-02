@@ -1106,7 +1106,7 @@
         }
       },
       "model.GenerationRequest": {
-        "description": "Request structure for TTS generation endpoints",
+        "description": "Request structure for TTS generation endpoints.\n\n**Optional parameters** (not shown in playground): `generationId` (string), `targetDuration` (number, seconds), `tempo` (number, 0.5–2.0), `variance` (number, 0.0–1.0), `seed` (integer), `temperature` (number, 0.0–1.0), `sampleRate` (integer: 8000/16000/22050/24000/32000/36000/44100/48000), `format` (string: mp3/opus/mulaw/wav), `promptBoost` (boolean), `superStretch` (boolean), `realtime` (boolean), `cleanAudio` (boolean, default true), `autoGain` (boolean), `publish` (boolean), `accentControl` (object with accentBaseLocale, accentLocale, accentRatio), `performanceReferencePromptId` (string), `voiceReference` (string, base64-encoded audio).",
         "type": "object",
         "required": ["locale", "model", "targetText", "voicePromptId"],
         "properties": {
@@ -1130,89 +1130,9 @@
             "description": "ID of the voice prompt to use for generation",
             "type": "string",
             "example": "bd1b00bb-be1c-4679-8eaa-0fcbfd4ff773"
-          },
-          "generationId": {
-            "description": "Optional client-provided ID for the generation. If not provided, one will be generated automatically.",
-            "type": "string"
-          },
-          "targetDuration": {
-            "description": "Target duration for the generated audio in seconds",
-            "type": "number"
-          },
-          "tempo": {
-            "description": "Playback speed multiplier (0.5-2.0)",
-            "type": "number",
-            "minimum": 0.5,
-            "maximum": 2.0
-          },
-          "variance": {
-            "description": "Voice variation level (0.0-1.0)",
-            "type": "number",
-            "minimum": 0.0,
-            "maximum": 1.0
-          },
-          "seed": {
-            "description": "Random seed for deterministic generation",
-            "type": "integer"
-          },
-          "temperature": {
-            "description": "Generation temperature (0.0-1.0). Higher values produce more varied output.",
-            "type": "number",
-            "minimum": 0.0,
-            "maximum": 1.0
-          },
-          "sampleRate": {
-            "description": "Output audio sample rate in Hz. Supported values: 8000, 16000, 22050, 24000, 32000, 36000, 44100, 48000.",
-            "type": "integer",
-            "enum": [8000, 16000, 22050, 24000, 32000, 36000, 44100, 48000],
-            "example": 44100
-          },
-          "format": {
-            "description": "Output audio format. Supported values: mp3, opus, mulaw, wav.",
-            "type": "string",
-            "enum": ["mp3", "opus", "mulaw", "wav"],
-            "example": "mp3"
-          },
-          "promptBoost": {
-            "description": "Enhance voice prompt characteristics for improved quality",
-            "type": "boolean",
-            "example": true
-          },
-          "superStretch": {
-            "description": "Enable super stretch mode for longer audio generation",
-            "type": "boolean",
-            "example": false
-          },
-          "realtime": {
-            "description": "Enable real-time processing mode for lower latency",
-            "type": "boolean",
-            "example": false
-          },
-          "cleanAudio": {
-            "description": "Apply audio cleanup processing to the output",
-            "type": "boolean",
-            "default": true,
-            "example": true
-          },
-          "autoGain": {
-            "description": "Automatically adjust audio gain levels",
-            "type": "boolean",
-            "example": true
-          },
-          "publish": {
-            "description": "Whether to publish the generated audio for persistent storage",
-            "type": "boolean",
-            "example": false
-          },
-          "accentControl": {
-            "description": "Optional accent control parameters for blending accents",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/model.AccentControl"
-              }
-            ]
           }
-        }
+        },
+        "additionalProperties": true
       },
       "model.GenderClassificationRequest": {
         "description": "Request for gender classification from audio",
