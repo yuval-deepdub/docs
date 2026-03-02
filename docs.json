@@ -72,12 +72,7 @@
         "label": "Support",
         "href": "mailto:support@deepdub.ai"
       }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.deepdub.com"
-    }
+    ]
   },
   "footer": {
     "socials": {
