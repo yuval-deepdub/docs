@@ -1211,14 +1211,6 @@
                 "$ref": "#/components/schemas/model.AccentControl"
               }
             ]
-          },
-          "performanceReferencePromptId": {
-            "description": "ID of a performance reference prompt to guide speech style and delivery",
-            "type": "string"
-          },
-          "voiceReference": {
-            "description": "Base64-encoded audio reference for voice cloning. Use this instead of voicePromptId for instant voice cloning.",
-            "type": "string"
           }
         }
       },
