@@ -317,7 +317,7 @@
     "/voice": {
       "get": {
         "operationId": "getVoicePrompts",
-        "description": "Retrieve all voice prompts associated with the authenticated customer's account. Results can be limited using the `limit` query parameter.",
+        "description": "Retrieve all private voice prompts associated with the authenticated customer's account. Results can be limited using the `limit` query parameter.",
         "tags": ["Voice"],
         "summary": "Get voice prompts",
         "parameters": [
