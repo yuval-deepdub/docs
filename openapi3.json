@@ -44,7 +44,20 @@
           }
         ],
         "requestBody": {
-          "$ref": "#/components/requestBodies/model.GenerationRequest"
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/model.GenerationRequest"
+              },
+              "example": {
+                "model": "dd-etts-3.0",
+                "targetText": "Hello world, welcome to Deepdub.",
+                "locale": "en-US",
+                "voicePromptId": "bd1b00bb-be1c-4679-8eaa-0fcbfd4ff773"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
