@@ -61,15 +61,7 @@
         },
         "responses": {
           "200": {
-            "description": "Audio stream in the requested format",
-            "content": {
-              "audio/mpeg": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
+            "description": "Audio stream in the requested format (MP3, WAV, Opus, or mulaw depending on `format` parameter). The response body is raw audio bytes."
           },
           "400": {
             "description": "Bad request — invalid or missing parameters",
