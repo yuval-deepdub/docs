@@ -323,7 +323,7 @@ client = DeepdubClient(api_key="dd-your-api-key")
 
 async def streaming_input():
     async with client.async_stream_connect(
-        model="dd-etts-2.5",
+        model="dd-etts-3.0",
         locale="en-US",
         voice_prompt_id="your-voice-id",
         format="wav",
@@ -332,12 +332,16 @@ async def streaming_input():
         await conn.async_stream_text("Hello, ")
         await conn.async_stream_text("this is streamed ")
         await conn.async_stream_text("text input.")
+        await conn.async_stream_end()
 
+        audio_data = bytearray()
         while True:
             audio = await conn.async_stream_recv_audio()
             if audio is None:
                 break
-            # Process audio chunk...
+            audio_data.extend(audio)
+            print(f"Received chunk: {len(audio)} bytes")
+        print(f"Total audio: {len(audio_data)} bytes")
 
 asyncio.run(streaming_input())
 ```
