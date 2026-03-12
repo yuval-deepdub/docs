@@ -139,18 +139,22 @@ from deepdub import DeepdubClient
 client = DeepdubClient(api_key="dd-00000000000000000000000065c9cbfe")
 
 async def stream():
+    audio_data = bytearray()
     async with client.async_connect() as conn:
-        audio = bytearray()
         async for chunk in conn.async_tts(
             text="Streaming audio in real time!",
-            voice_prompt_id="50a537cf-1ec8-4714-b07e-c589ab76be4b",
+            voice_prompt_id="bd1b00bb-be1c-4679-8eaa-0fcbfd4ff773",
             model="dd-etts-3.0",
-            format="mp3",
+            locale="en-US",
+            format="wav",
+            sample_rate=16000,
         ):
-            audio.extend(chunk)
+            audio_data.extend(chunk)
+            print(f"Received chunk: {len(chunk)} bytes")
 
-        with open("streamed.mp3", "wb") as f:
-            f.write(audio)
+    with open("streamed.wav", "wb") as f:
+        f.write(audio_data)
+    print(f"Total audio: {len(audio_data)} bytes")
 
 asyncio.run(stream())
 ```

@@ -113,10 +113,9 @@ Send a JSON message on the WebSocket connection:
   "model": "dd-etts-3.0",
   "targetText": "Welcome to Deepdub's real-time text to speech API.",
   "locale": "en-US",
-  "voicePromptId": "vp_12345abcde",
-  "format": "mp3",
-  "sampleRate": 44100,
-  "temperature": 0.7
+  "voicePromptId": "bd1b00bb-be1c-4679-8eaa-0fcbfd4ff773",
+  "format": "wav",
+  "sampleRate": 16000
 }
 ```
 
@@ -242,91 +241,59 @@ Blend accents between two locales using the `accentControl` object:
 
 ```python
 import asyncio
-import websockets
-import json
-import base64
+from deepdub import DeepdubClient
 
-async def stream_tts():
-    uri = "wss://wsapi.deepdub.ai/open"
-    headers = {"x-api-key": "YOUR_API_KEY"}
+client = DeepdubClient(api_key="dd-00000000000000000000000065c9cbfe")
 
-    async with websockets.connect(uri, extra_headers=headers) as ws:
-        request = {
-            "action": "text-to-speech",
-            "model": "dd-etts-3.0",
-            "targetText": "Hello from Deepdub!",
-            "locale": "en-US",
-            "voicePromptId": "vp_12345abcde",
-            "format": "mp3"
-        }
+async def streaming_tts():
+    audio_data = bytearray()
+    async with client.async_connect() as conn:
+        async for chunk in conn.async_tts(
+            text="Hello, this is streamed text input.",
+            voice_prompt_id="bd1b00bb-be1c-4679-8eaa-0fcbfd4ff773",
+            model="dd-etts-3.0",
+            locale="en-US",
+            format="wav",
+            sample_rate=16000,
+        ):
+            audio_data.extend(chunk)
+            print(f"Received chunk: {len(chunk)} bytes")
 
-        await ws.send(json.dumps(request))
+    with open("output.wav", "wb") as f:
+        f.write(audio_data)
+    print(f"Total audio: {len(audio_data)} bytes")
 
-        audio_chunks = []
-        async for message in ws:
-            response = json.loads(message)
-
-            if "error" in response:
-                print(f"Error: {response['error']}")
-                break
-
-            if response.get("data"):
-                audio_chunks.append(base64.b64decode(response["data"]))
-
-            if response.get("isFinished"):
-                break
-
-        with open("output.mp3", "wb") as f:
-            for chunk in audio_chunks:
-                f.write(chunk)
-
-        print("Audio saved to output.mp3")
-
-asyncio.run(stream_tts())
+asyncio.run(streaming_tts())
 ```
 
 ### JavaScript
 
 ```javascript
-const WebSocket = require("ws");
+const { DeepdubClient } = require("@deepdub/node");
 const fs = require("fs");
 
-const ws = new WebSocket("wss://wsapi.deepdub.ai/open", {
-  headers: { "x-api-key": "YOUR_API_KEY" },
-});
+async function streamingTts() {
+  const deepdub = new DeepdubClient("dd-00000000000000000000000065c9cbfe");
+  await deepdub.connect();
 
-ws.on("open", () => {
-  ws.send(
-    JSON.stringify({
-      action: "text-to-speech",
-      model: "dd-etts-3.0",
-      targetText: "Hello from Deepdub!",
-      locale: "en-US",
-      voicePromptId: "vp_12345abcde",
-      format: "mp3",
-    })
-  );
-});
-
-const chunks = [];
-
-ws.on("message", (data) => {
-  const response = JSON.parse(data);
-
-  if (response.error) {
-    console.error("Error:", response.error);
-    ws.close();
-    return;
+  const chunks = [];
+  for await (const chunk of deepdub.streamTts("Hello, this is streamed text input.", {
+    locale: "en-US",
+    voicePromptId: "bd1b00bb-be1c-4679-8eaa-0fcbfd4ff773",
+    model: "dd-etts-3.0",
+    format: "wav",
+    sampleRate: 16000,
+  })) {
+    chunks.push(chunk);
+    console.log(`Received chunk: ${chunk.length} bytes`);
   }
 
-  if (response.data) {
-    chunks.push(Buffer.from(response.data, "base64"));
-  }
+  const audio = Buffer.concat(chunks);
+  fs.writeFileSync("output.wav", audio);
+  console.log(`Total audio: ${audio.length} bytes`);
 
-  if (response.isFinished) {
-    fs.writeFileSync("output.mp3", Buffer.concat(chunks));
-    console.log("Audio saved to output.mp3");
-    ws.close();
-  }
-});
+  deepdub.disconnect();
+}
+
+streamingTts();
 ```
