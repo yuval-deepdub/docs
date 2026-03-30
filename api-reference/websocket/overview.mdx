@@ -259,7 +259,7 @@ The internal generation runs at 48 kHz and is resampled to the requested rate. I
 
 | Feature | REST API | WebSocket API |
 |---------|----------|---------------|
-| **Delivery** | Complete audio in a single HTTP response | Chunked audio delivered incrementally as base64-encoded messages |
+| **Delivery** | Streaming HTTP response (chunked audio bytes) | Chunked audio delivered incrementally as base64-encoded JSON messages |
 | **Formats** | `mp3`, `opus`, `mulaw` | `wav` (default), `mp3`, `opus`, `mulaw`, `s16le` |
 | **Streaming input (ctx/isFinal)** | Not supported | `wav`, `s16le`, `mulaw` only |
 | **Default format** | `mp3` | `wav` |

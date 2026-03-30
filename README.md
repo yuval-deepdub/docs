@@ -8,7 +8,7 @@ Developer documentation for [Deepdub](https://deepdub.com) voice AI APIs. Built 
 
 | API | Protocol | Description |
 |-----|----------|-------------|
-| [REST TTS](/api-reference/tts/generate-and-stream-tts-audio) | HTTP POST | Generate a complete audio file from text |
+| [REST TTS](/api-reference/tts/generate-and-stream-tts-audio) | HTTP POST | Stream generated audio as a chunked HTTP response |
 | [WebSocket TTS](/api-reference/websocket/overview) | WebSocket | Stream audio chunks in real-time for low-latency playback |
 | [Gender Detection](/api-reference/gender-detection/classify-speaker-gender) | HTTP POST | Classify speaker gender from audio |
 | [Voice Management](/api-reference/voice/get-voice-prompts) | HTTP REST | Upload, list, update, and delete voice prompts |

@@ -4,7 +4,7 @@ openapi: post /tts
 
 ## Supported output formats
 
-The REST API returns audio as raw bytes in the response body. Supported formats:
+The REST API streams audio as raw bytes in the HTTP response body. Supported formats:
 
 | Format | Description |
 |--------|-------------|
@@ -24,7 +24,7 @@ The sample rate is passed through to the audio conversion layer. The internal ge
 
 | Feature | REST API | WebSocket API |
 |---------|----------|---------------|
-| **Delivery** | Complete audio in a single HTTP response | Chunked audio delivered incrementally as base64-encoded messages |
+| **Delivery** | Streaming HTTP response (chunked audio bytes) | Chunked audio delivered incrementally as base64-encoded JSON messages |
 | **Formats** | `mp3`, `opus`, `mulaw` | `wav` (default), `mp3`, `opus`, `mulaw`, `s16le` |
 | **Streaming input (ctx/isFinal)** | Not supported | `wav`, `s16le`, `mulaw` only |
 | **Default format** | `mp3` | `wav` |
