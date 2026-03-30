@@ -235,6 +235,44 @@ Blend accents between two locales using the `accentControl` object:
 | `accentLocale` | string | Target accent to blend (e.g., `fr-FR`) |
 | `accentRatio` | number | Blend ratio from 0.0 (base only) to 1.0 (target only) |
 
+## Supported output formats
+
+Audio chunks are delivered as base64-encoded data in JSON messages.
+
+| Format | Description |
+|--------|-------------|
+| `mp3` | Compressed audio, smallest size. **Default.** |
+| `wav` | Raw PCM audio bytes **without WAV headers** (headerless). |
+| `opus` | High-quality compressed audio, efficient for streaming. |
+| `mulaw` | 8-bit µ-law encoding, commonly used in telephony. |
+
+<Warning>
+  Unlike the REST API, the WebSocket `wav` format returns **headerless raw PCM bytes** (no WAV file header). You must prepend a WAV header yourself if saving to a `.wav` file, or use the data directly for real-time playback.
+</Warning>
+
+## Supported sample rates
+
+| Sample rate | Description |
+|-------------|-------------|
+| `8000` | Telephony (µ-law) |
+| `16000` | Wideband speech |
+| `22050` | Standard quality |
+| `24000` | Enhanced speech |
+| `32000` | High quality |
+| `36000` | Studio speech |
+| `44100` | CD quality |
+| `48000` | Professional audio |
+
+### REST vs WebSocket differences
+
+| Feature | REST API | WebSocket API |
+|---------|----------|---------------|
+| **Delivery** | Complete audio file in a single response | Chunked audio delivered incrementally as base64-encoded messages |
+| **Formats** | `mp3`, `wav`, `opus`, `mulaw` | `mp3`, `wav` (headerless), `opus`, `mulaw` |
+| **WAV behavior** | Returns a complete WAV file with headers | Returns raw PCM audio bytes without WAV headers |
+| **Sample rates** | 8000, 16000, 22050, 24000, 32000, 36000, 44100, 48000 | 8000, 16000, 22050, 24000, 32000, 36000, 44100, 48000 |
+| **Best for** | Simple integrations, file generation | Real-time playback, low-latency applications |
+
 ## Code examples
 
 ### Python
