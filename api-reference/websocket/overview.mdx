@@ -70,11 +70,11 @@ Send a JSON message on the WebSocket connection:
 </ParamField>
 
 <ParamField body="sampleRate" type="integer">
-  Output sample rate in Hz. Supported: `8000`, `16000`, `22050`, `24000`, `32000`, `36000`, `44100`, `48000`.
+  Output sample rate in Hz. Internal generation is 48 kHz, resampled to the requested rate. Defaults to 8000 Hz for `mulaw` if not specified.
 </ParamField>
 
-<ParamField body="format" type="string" default="mp3">
-  Output audio format: `mp3`, `wav`, `opus`, or `mulaw`.
+<ParamField body="format" type="string" default="wav">
+  Output audio format: `wav` (default), `mp3`, `opus`, `mulaw`, or `s16le`. Streaming input with `ctx`/`isFinal` only supports `wav`, `s16le`, and `mulaw`.
 </ParamField>
 
 <ParamField body="promptBoost" type="boolean">
@@ -239,38 +239,31 @@ Blend accents between two locales using the `accentControl` object:
 
 Audio chunks are delivered as base64-encoded data in JSON messages.
 
-| Format | Description |
-|--------|-------------|
-| `mp3` | Compressed audio, smallest size. **Default.** |
-| `wav` | Raw PCM audio bytes **without WAV headers** (headerless). |
-| `opus` | High-quality compressed audio, efficient for streaming. |
-| `mulaw` | 8-bit µ-law encoding, commonly used in telephony. |
+| Format | Standard requests | Streaming input (ctx/isFinal) |
+|--------|-------------------|-------------------------------|
+| `wav` | Yes (**default**) | Yes |
+| `mp3` | Yes | No |
+| `opus` | Yes | No |
+| `mulaw` | Yes | Yes |
+| `s16le` | Yes | Yes |
 
-<Warning>
-  Unlike the REST API, the WebSocket `wav` format returns **headerless raw PCM bytes** (no WAV file header). You must prepend a WAV header yourself if saving to a `.wav` file, or use the data directly for real-time playback.
-</Warning>
+<Note>
+  Streaming input with `ctx`/`isFinal` only supports `wav`, `s16le`, and `mulaw` formats.
+</Note>
 
-## Supported sample rates
+## Sample rates
 
-| Sample rate | Description |
-|-------------|-------------|
-| `8000` | Telephony (µ-law) |
-| `16000` | Wideband speech |
-| `22050` | Standard quality |
-| `24000` | Enhanced speech |
-| `32000` | High quality |
-| `36000` | Studio speech |
-| `44100` | CD quality |
-| `48000` | Professional audio |
+The internal generation runs at 48 kHz and is resampled to the requested rate. If no sample rate is specified, `mulaw` defaults to 8000 Hz.
 
-### REST vs WebSocket differences
+### REST vs WebSocket comparison
 
 | Feature | REST API | WebSocket API |
 |---------|----------|---------------|
-| **Delivery** | Complete audio file in a single response | Chunked audio delivered incrementally as base64-encoded messages |
-| **Formats** | `mp3`, `wav`, `opus`, `mulaw` | `mp3`, `wav` (headerless), `opus`, `mulaw` |
-| **WAV behavior** | Returns a complete WAV file with headers | Returns raw PCM audio bytes without WAV headers |
-| **Sample rates** | 8000, 16000, 22050, 24000, 32000, 36000, 44100, 48000 | 8000, 16000, 22050, 24000, 32000, 36000, 44100, 48000 |
+| **Delivery** | Complete audio in a single HTTP response | Chunked audio delivered incrementally as base64-encoded messages |
+| **Formats** | `mp3`, `opus`, `mulaw` | `wav` (default), `mp3`, `opus`, `mulaw`, `s16le` |
+| **Streaming input (ctx/isFinal)** | Not supported | `wav`, `s16le`, `mulaw` only |
+| **Default format** | `mp3` | `wav` |
+| **Default mulaw sample rate** | 8000 Hz | 8000 Hz |
 | **Best for** | Simple integrations, file generation | Real-time playback, low-latency applications |
 
 ## Code examples

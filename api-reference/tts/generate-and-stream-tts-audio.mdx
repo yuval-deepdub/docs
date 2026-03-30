@@ -4,38 +4,29 @@ openapi: post /tts
 
 ## Supported output formats
 
-The REST API returns a complete audio file as raw bytes in the response body.
+The REST API returns audio as raw bytes in the response body. Supported formats:
 
-| Format | Content type | Description |
-|--------|-------------|-------------|
-| `mp3` | `audio/mpeg` | Compressed audio, smallest file size. **Default.** |
-| `wav` | `audio/wav` | Uncompressed PCM audio with WAV header. |
-| `opus` | `audio/opus` | High-quality compressed audio, efficient for streaming. |
-| `mulaw` | `audio/basic` | 8-bit µ-law encoding, commonly used in telephony. |
+| Format | Description |
+|--------|-------------|
+| `mp3` | Compressed audio, smallest file size. **Default.** |
+| `opus` | High-quality compressed audio, efficient for streaming. |
+| `mulaw` | 8-bit µ-law encoding, commonly used in telephony. Defaults to 8000 Hz if no sample rate is specified. |
 
-## Supported sample rates
+<Warning>
+  The REST API supports `mp3`, `opus`, and `mulaw` only. For `wav` or `s16le` output, use the [WebSocket API](/api-reference/websocket/overview).
+</Warning>
 
-| Sample rate | Description |
-|-------------|-------------|
-| `8000` | Telephony (µ-law) |
-| `16000` | Wideband speech |
-| `22050` | Standard quality |
-| `24000` | Enhanced speech |
-| `32000` | High quality |
-| `36000` | Studio speech |
-| `44100` | CD quality |
-| `48000` | Professional audio |
+## Sample rates
 
-<Note>
-  Not all format and sample rate combinations are supported. For `mulaw`, use `8000` Hz. For `mp3`, sample rates above `48000` Hz are not supported.
-</Note>
+The sample rate is passed through to the audio conversion layer. The internal generation runs at 48 kHz and is resampled to the requested rate. If no sample rate is specified, `mulaw` defaults to 8000 Hz.
 
-### REST vs WebSocket differences
+### REST vs WebSocket comparison
 
 | Feature | REST API | WebSocket API |
 |---------|----------|---------------|
-| **Delivery** | Complete audio file in a single response | Chunked audio delivered incrementally as base64-encoded messages |
-| **Formats** | `mp3`, `wav`, `opus`, `mulaw` | `mp3`, `wav` (headerless), `opus`, `mulaw` |
-| **WAV behavior** | Returns a complete WAV file with headers | Returns raw PCM audio bytes without WAV headers |
-| **Sample rates** | 8000, 16000, 22050, 24000, 32000, 36000, 44100, 48000 | 8000, 16000, 22050, 24000, 32000, 36000, 44100, 48000 |
+| **Delivery** | Complete audio in a single HTTP response | Chunked audio delivered incrementally as base64-encoded messages |
+| **Formats** | `mp3`, `opus`, `mulaw` | `wav` (default), `mp3`, `opus`, `mulaw`, `s16le` |
+| **Streaming input (ctx/isFinal)** | Not supported | `wav`, `s16le`, `mulaw` only |
+| **Default format** | `mp3` | `wav` |
+| **Default mulaw sample rate** | 8000 Hz | 8000 Hz |
 | **Best for** | Simple integrations, file generation | Real-time playback, low-latency applications |

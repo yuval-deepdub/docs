@@ -27,7 +27,7 @@
     "/tts": {
       "post": {
         "operationId": "generateTTS",
-        "description": "Generate and stream TTS audio based on the provided text. Returns an audio stream in the specified format (default MP3). The audio is generated using the specified model and voice prompt, with optional parameters for fine-tuning the output.",
+        "description": "Generate and stream TTS audio based on the provided text. Returns an audio stream in the specified format (default MP3). Supported formats: `mp3`, `opus`, `mulaw`. For `wav` or `s16le` output, use the WebSocket API.",
         "tags": ["TTS"],
         "summary": "Generate and stream TTS audio",
         "parameters": [
@@ -61,7 +61,7 @@
         },
         "responses": {
           "200": {
-            "description": "Audio stream in the requested format (MP3, WAV, Opus, or mulaw depending on `format` parameter). The response body is raw audio bytes."
+            "description": "Audio stream in the requested format (MP3, Opus, or mulaw depending on `format` parameter). The response body is raw audio bytes."
           },
           "400": {
             "description": "Bad request — invalid or missing parameters",
@@ -1111,7 +1111,7 @@
         }
       },
       "model.GenerationRequest": {
-        "description": "Request structure for TTS generation endpoints.\n\n**Optional parameters** (not shown in playground): `generationId` (string), `targetDuration` (number, seconds), `tempo` (number, 0.5–2.0), `variance` (number, 0.0–1.0), `seed` (integer), `temperature` (number, 0.0–1.0), `sampleRate` (integer: 8000/16000/22050/24000/32000/36000/44100/48000), `format` (string: mp3/opus/mulaw/wav), `promptBoost` (boolean), `superStretch` (boolean), `realtime` (boolean), `cleanAudio` (boolean, default true), `autoGain` (boolean), `publish` (boolean), `accentControl` (object with accentBaseLocale, accentLocale, accentRatio), `performanceReferencePromptId` (string), `voiceReference` (string, base64-encoded audio).",
+        "description": "Request structure for TTS generation endpoints.\n\n**Optional parameters** (not shown in playground): `generationId` (string), `targetDuration` (number, seconds), `tempo` (number, 0.5–2.0), `variance` (number, 0.0–1.0), `seed` (integer), `temperature` (number, 0.0–1.0), `sampleRate` (integer), `format` (string: mp3/opus/mulaw — default mp3), `promptBoost` (boolean), `superStretch` (boolean), `realtime` (boolean), `cleanAudio` (boolean, default true), `autoGain` (boolean), `publish` (boolean), `accentControl` (object with accentBaseLocale, accentLocale, accentRatio), `performanceReferencePromptId` (string), `voiceReference` (string, base64-encoded audio).",
         "type": "object",
         "required": ["locale", "model", "targetText", "voicePromptId"],
         "properties": {

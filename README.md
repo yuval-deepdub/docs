@@ -15,27 +15,19 @@ Developer documentation for [Deepdub](https://deepdub.com) voice AI APIs. Built 
 
 ## Supported output formats
 
-| Format | REST API | WebSocket API | Description |
-|--------|----------|---------------|-------------|
-| `mp3` | Complete MP3 file | MP3 chunks | Compressed, smallest size. **Default.** |
-| `wav` | Complete WAV file with headers | Raw PCM bytes (headerless) | Uncompressed audio |
-| `opus` | Complete Opus file | Opus chunks | High-quality compressed, efficient for streaming |
-| `mulaw` | µ-law encoded file | µ-law chunks | 8-bit telephony encoding |
+| Format | REST API | WebSocket | WebSocket streaming input (ctx/isFinal) |
+|--------|----------|-----------|------------------------------------------|
+| `mp3` | Yes (**default**) | Yes | No |
+| `opus` | Yes | Yes | No |
+| `mulaw` | Yes | Yes | Yes |
+| `wav` | No | Yes (**default**) | Yes |
+| `s16le` | No | Yes | Yes |
 
-> **Note:** The WebSocket `wav` format returns **headerless raw PCM bytes** — no WAV file header is included. For the REST API, a complete WAV file with headers is returned.
+> **Note:** The REST API only supports `mp3`, `opus`, and `mulaw`. For `wav` or `s16le` output, use the WebSocket API.
 
-## Supported sample rates
+## Sample rates
 
-| Sample rate | Description |
-|-------------|-------------|
-| `8000` | Telephony (µ-law) |
-| `16000` | Wideband speech |
-| `22050` | Standard quality |
-| `24000` | Enhanced speech |
-| `32000` | High quality |
-| `36000` | Studio speech |
-| `44100` | CD quality |
-| `48000` | Professional audio |
+The internal generation runs at 48 kHz and is resampled to the requested rate. If no sample rate is specified, `mulaw` defaults to 8000 Hz.
 
 ## SDKs
 

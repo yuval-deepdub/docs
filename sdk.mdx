@@ -100,7 +100,7 @@ with open("output.mp3", "wb") as f:
 </ParamField>
 
 <ParamField body="format" type="string" default="mp3">
-  Audio output format: `mp3`, `headerless-wav`, `opus`, or `mulaw`.
+  Audio output format. REST API supports: `mp3`, `opus`, `mulaw`. WebSocket additionally supports: `wav` (default), `s16le`.
 </ParamField>
 
 <ParamField body="temperature" type="float">
