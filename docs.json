@@ -65,6 +65,16 @@
             ]
           },
           {
+            "group": "Issues",
+            "pages": [
+              "api-reference/issues/create-an-issue",
+              "api-reference/issues/get-an-issue",
+              "api-reference/issues/update-an-issue",
+              "api-reference/issues/update-issue-state",
+              "api-reference/issues/delete-an-issue"
+            ]
+          },
+          {
             "group": "WebSocket",
             "pages": ["api-reference/websocket/overview"]
           }

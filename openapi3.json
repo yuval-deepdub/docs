@@ -1062,6 +1062,476 @@
           }
         }
       }
+    },
+    "/issues": {
+      "post": {
+        "operationId": "createIssue",
+        "description": "Report a problem with a generated audio clip — for example, a hallucinated word or a glossary mismatch. The issue is created in Deepdub's internal triage system and tagged with your customer ID so only you can view or modify it.\n\nThe `type` field selects the report category. It defaults to `hallucinations` and can later be changed via `PUT /issues/{id}`.",
+        "tags": ["Issues"],
+        "summary": "Create an issue",
+        "parameters": [
+          {
+            "description": "API Key",
+            "name": "x-api-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/model.CreateIssueRequest"
+              },
+              "example": {
+                "generationId": "gen_01HX9YV6Z2D5K7TQ8R3M0N4P1A",
+                "generatedText": "The quick brown fox jumps over the lazy dog.",
+                "problemWord": "fox",
+                "voicePromptId": "bd1b00bb-be1c-4679-8eaa-0fcbfd4ff773",
+                "type": "hallucinations",
+                "problemSeconds": 1.42,
+                "phoneticHeard": "fɒks",
+                "phoneticExpected": "fɑːks",
+                "additionalComments": "Word sounds clipped at the end."
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Issue created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — missing required field or invalid `type`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "invalid issue type \"foo\" (allowed: hallucinations, glossary)"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "Unauthorized: invalid or missing API key"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "Failed to create issue"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/issues/{id}": {
+      "get": {
+        "operationId": "getIssue",
+        "description": "Fetch a previously reported issue by its ID. Only issues created by your customer are returned; otherwise a 404 is returned.",
+        "tags": ["Issues"],
+        "summary": "Get an issue",
+        "parameters": [
+          {
+            "description": "API Key",
+            "name": "x-api-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
+          },
+          {
+            "description": "Issue ID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Issue details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "Unauthorized: invalid or missing API key"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Issue not found or not owned by this customer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "Issue not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "Failed to get issue"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "updateIssue",
+        "description": "Update an existing issue. All fields are optional — only the fields you include in the request body are changed; everything else is preserved. Changing `type` swaps the issue's category label (e.g., `hallucinations` → `glossary`) without disturbing other labels.",
+        "tags": ["Issues"],
+        "summary": "Update an issue",
+        "parameters": [
+          {
+            "description": "API Key",
+            "name": "x-api-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
+          },
+          {
+            "description": "Issue ID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/model.UpdateIssueRequest"
+              },
+              "example": {
+                "type": "glossary",
+                "additionalComments": "Updated: also affects the next sentence."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated issue",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid `type` or malformed body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "invalid issue type \"foo\" (allowed: hallucinations, glossary)"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "Unauthorized: invalid or missing API key"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Issue not found or not owned by this customer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "Issue not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "Failed to update issue"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteIssue",
+        "description": "Archive (soft-delete) an issue. The issue is no longer visible to your customer, but the record is preserved internally for triage history.",
+        "tags": ["Issues"],
+        "summary": "Delete an issue",
+        "parameters": [
+          {
+            "description": "API Key",
+            "name": "x-api-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
+          },
+          {
+            "description": "Issue ID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Issue deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueMessageResponse"
+                },
+                "example": {
+                  "message": "Issue deleted"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "Unauthorized: invalid or missing API key"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Issue not found or not owned by this customer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "Issue not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "Failed to delete issue"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/issues/{id}/state": {
+      "patch": {
+        "operationId": "updateIssueState",
+        "description": "Move an issue through its workflow. Use this to mark an issue as `in_progress`, `resolved`, or `rejected` once you've reviewed Deepdub's response. `rejectionReason` is required when `state` is `rejected`.\n\nState mapping (Deepdub-internal triage state → public state):\n\n| Internal state            | Public `state`              |\n|---------------------------|------------------------------|\n| Backlog, Todo             | `open`                       |\n| Uploaded for Correction   | `uploaded_for_correction`    |\n| In Progress               | `in_progress`                |\n| Done                      | `resolved`                   |\n| Canceled                  | `rejected`                   |\n| Duplicate                 | `rejected` (reason auto-set) |",
+        "tags": ["Issues"],
+        "summary": "Update issue state",
+        "parameters": [
+          {
+            "description": "API Key",
+            "name": "x-api-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "dd-00000000000000000000000065c9cbfe"
+            },
+            "example": "dd-00000000000000000000000065c9cbfe"
+          },
+          {
+            "description": "Issue ID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/model.UpdateIssueStateRequest"
+              },
+              "example": {
+                "state": "rejected",
+                "rejectionReason": "homograph — context resolves correctly"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated issue",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid state or missing rejection reason",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "rejectionReason is required when state is rejected"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "Unauthorized: invalid or missing API key"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Issue not found or not owned by this customer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "Issue not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model.IssueError"
+                },
+                "example": {
+                  "message": "Failed to update issue state"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1441,6 +1911,173 @@
             "type": "integer",
             "minimum": 0,
             "example": 5
+          }
+        }
+      },
+      "model.CreateIssueRequest": {
+        "description": "Body for `POST /issues`. Reports a problem with a generated audio clip.",
+        "type": "object",
+        "required": ["generationId", "generatedText", "problemWord", "voicePromptId"],
+        "properties": {
+          "generationId": {
+            "description": "ID of the generation that produced the problematic audio.",
+            "type": "string",
+            "example": "gen_01HX9YV6Z2D5K7TQ8R3M0N4P1A"
+          },
+          "generatedText": {
+            "description": "Full text that was sent to the TTS engine.",
+            "type": "string",
+            "example": "The quick brown fox jumps over the lazy dog."
+          },
+          "problemWord": {
+            "description": "The specific word (or short phrase) that was rendered incorrectly.",
+            "type": "string",
+            "example": "fox"
+          },
+          "voicePromptId": {
+            "description": "Voice prompt that was used for the generation.",
+            "type": "string",
+            "example": "bd1b00bb-be1c-4679-8eaa-0fcbfd4ff773"
+          },
+          "type": {
+            "description": "Issue category. Defaults to `hallucinations`.",
+            "type": "string",
+            "enum": ["hallucinations", "glossary"],
+            "default": "hallucinations",
+            "example": "hallucinations"
+          },
+          "problemSeconds": {
+            "description": "Optional. Offset (in seconds) inside the generated audio where the problem occurs.",
+            "type": "number",
+            "example": 1.42
+          },
+          "phoneticHeard": {
+            "description": "Optional. Phonetic transcription of how the word actually sounded.",
+            "type": "string",
+            "example": "fɒks"
+          },
+          "phoneticExpected": {
+            "description": "Optional. Phonetic transcription of how the word should have sounded.",
+            "type": "string",
+            "example": "fɑːks"
+          },
+          "additionalComments": {
+            "description": "Optional free-form notes for the triage team.",
+            "type": "string"
+          },
+          "problemAudioFile": {
+            "description": "Optional base64-encoded audio sample to attach to the issue.",
+            "type": "string"
+          }
+        }
+      },
+      "model.UpdateIssueRequest": {
+        "description": "Body for `PUT /issues/{id}`. All fields are optional — only the fields you include are changed; everything else is preserved. Setting `type` swaps the issue's category label.",
+        "type": "object",
+        "properties": {
+          "generationId": { "type": "string" },
+          "generatedText": { "type": "string" },
+          "problemWord": { "type": "string" },
+          "voicePromptId": { "type": "string" },
+          "type": {
+            "description": "Issue category.",
+            "type": "string",
+            "enum": ["hallucinations", "glossary"],
+            "example": "glossary"
+          },
+          "problemSeconds": { "type": "number" },
+          "phoneticHeard": { "type": "string" },
+          "phoneticExpected": { "type": "string" },
+          "additionalComments": { "type": "string" },
+          "problemAudioFile": {
+            "description": "Optional base64-encoded audio sample to attach to the issue.",
+            "type": "string"
+          }
+        }
+      },
+      "model.UpdateIssueStateRequest": {
+        "description": "Body for `PATCH /issues/{id}/state`. `rejectionReason` is required when `state` is `rejected`.",
+        "type": "object",
+        "required": ["state"],
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": ["open", "uploaded_for_correction", "in_progress", "resolved", "rejected"],
+            "example": "resolved"
+          },
+          "rejectionReason": {
+            "description": "Required when `state` is `rejected`. Free-form explanation (e.g., `\"homograph\"`, `\"ambiguous context\"`, `\"duplicate report\"`).",
+            "type": "string",
+            "example": "homograph — context resolves correctly"
+          }
+        }
+      },
+      "model.IssueResponse": {
+        "description": "An issue (problem report) and its current state.",
+        "type": "object",
+        "required": ["id", "state", "createdAt", "updatedAt", "generationId", "generatedText", "problemWord", "voicePromptId"],
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the issue.",
+            "type": "string",
+            "example": "ISS-1234"
+          },
+          "state": {
+            "description": "Customer-visible workflow state of the issue.",
+            "type": "string",
+            "enum": ["open", "uploaded_for_correction", "in_progress", "resolved", "rejected"],
+            "example": "in_progress"
+          },
+          "rejectionReason": {
+            "description": "Reason the issue was rejected. Only set when `state` is `rejected`.",
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "generationId": { "type": "string" },
+          "generatedText": { "type": "string" },
+          "problemWord": { "type": "string" },
+          "voicePromptId": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["hallucinations", "glossary"]
+          },
+          "locale": {
+            "description": "Locale of the original generation, auto-filled from the generation log.",
+            "type": "string",
+            "example": "en-US"
+          },
+          "phoneticHeard": { "type": "string" },
+          "phoneticExpected": { "type": "string" },
+          "additionalComments": { "type": "string" },
+          "problemSeconds": { "type": "number" }
+        }
+      },
+      "model.IssueError": {
+        "description": "Error response returned by the issues API.",
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Issue not found"
+          }
+        }
+      },
+      "model.IssueMessageResponse": {
+        "description": "Plain message response (used by `DELETE /issues/{id}`).",
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Issue deleted"
           }
         }
       }
