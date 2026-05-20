@@ -114,7 +114,6 @@ asyncio.run(stream())
 ### Other SDK methods
 
 - `client.tts(...)` — sync TTS, returns bytes
-- `client.retroactive_tts(...)` — async generation, returns URL
 - `client.classify_gender(data=Path("audio.wav"))` — gender detection
 - `client.list_voices()` — list voice prompts
 - `client.add_voice(data=Path("sample.wav"), name="...", gender="female", locale="en-US")` — upload voice
