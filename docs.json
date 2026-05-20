@@ -75,6 +75,14 @@
             ]
           },
           {
+            "group": "Infrastructure",
+            "pages": [
+              "api-reference/infrastructure/get-connections-for-multiple-models",
+              "api-reference/infrastructure/get-connections-for-a-model",
+              "api-reference/infrastructure/update-model-autoscaling-group"
+            ]
+          },
+          {
             "group": "Usage",
             "pages": [
               "api-reference/usage/get-daily-concurrent-usage",
